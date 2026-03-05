@@ -35,14 +35,12 @@ file ~/bin/zeroclaw       # ELF 64-bit ARM aarch64
 ## ⚙️ Step 3: Aliases & Persistence
 ```bash
 cat >> ~/.bashrc << 'EOF'
+export PATH="$HOME/bin:$PATH"
 # ZeroClaw Native
 alias zeroclaw="~/bin/zeroclaw"
 alias zeroclaw-stop="pkill -f zeroclaw"
 alias zeroclaw-start="nohup zeroclaw daemon > ~/.zeroclaw/daemon.out 2>&1 &"
 alias zeroclaw-restart="zeroclaw-stop & sleep 3 && zeroclaw-start"
-
-# opencode
-export PATH=/data/data/com.termux/files/home/.oper.code/bin:$PATH
 EOF
 
 # Auto-boot (survives reboot)
@@ -147,4 +145,4 @@ Uptime: 99.9% (wake-lock)
 
 **Save**: `cat > ~/zeroclaw-android-setup.md << 'EOF'` → paste → **Ctrl+D**.
 
-**Your pocket supercomputer is operational.** Local Ollama next, or custom tools/agents? 🚀
+**Your pocket supercomputer is operational.**
