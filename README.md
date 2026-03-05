@@ -4,8 +4,8 @@
 
 ## 📱 Prerequisites
 ```
-- Samsung Galaxy Note 20 Ultra (12GB RAM)
-- Termux (F-Droid version)
+- Samsung Galaxy Note 20 Ultra (12GB RAM) / OR any Android Phone
+- Termux (F-Droid version) or from PlayStore
 - Telegram app
 - OpenAI API key (optional: Ollama local)
 ```
