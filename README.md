@@ -60,9 +60,12 @@ source ~/.bashrc
 ```
 
 ## 🔧 Step 4: Core Configuration
+Interactive onboarding wizard in CLI
 ```bash
-zeroclaw onboard
+zeroclaw onboard --interactive
 ```
+
+Recommended minimal setup
 ```
 Provider: openai  (API key)
 Channel: telegram (BotFather token) 
