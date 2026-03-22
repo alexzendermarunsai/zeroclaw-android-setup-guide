@@ -1,68 +1,96 @@
-# 🚀 Complete ZeroClaw Android Setup Guide (Production-Ready)
+# ZeroClaw Guide: Android Setup with Termux
 
-**March 5, 2026** — Native binary, daemon persistence, **optional offline Ollama**. Samsung Note 20 Ultra (aarch64) tested.
+**March 22, 2026** — Simple Termux setup for the latest prebuilt ZeroClaw install with daemon persistence. Samsung Note 20 Ultra (aarch64) tested.
+
+## ⚡ Quick Start
+```bash
+pkg update && pkg upgrade -y
+pkg install git curl termux-api htop -y
+mkdir -p ~/.cargo/bin
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+git clone https://github.com/zeroclaw-labs/zeroclaw.git
+cd zeroclaw
+./install.sh --prebuilt-only
+cd ..
+rm -rf zeroclaw
+
+zeroclaw onboard
+zeroclaw daemon
+```
+
+For reboot persistence and helper aliases, continue with Step 3.
+
+## 📚 Other Guides
+- `android-local-llm.md` - Run local LLMs on Android with Termux
+- `android-cross-compile-guide.md` - Cross-compile Android binaries
+- `setup-ssh-termux.md` - Set up SSH access for Termux
 
 ## 📱 Prerequisites
 ```
 - Samsung Galaxy Note 20 Ultra (12GB RAM) / OR any Android Phone
 - Termux (F-Droid version recommended, PlayStore OK)  
+- Termux:Boot app (needed for auto-start after reboot)
 - Telegram app
-- OpenAI API key (optional: Ollama local)
+- OpenAI API key
 ```
 
 ## 🎯 Step 1: Termux Base Setup
 ```bash
 pkg update && pkg upgrade -y
-pkg install git curl termux-api htop proot-distro -y
-mkdir -p ~/bin
-echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+pkg install git curl termux-api htop -y
+mkdir -p ~/.cargo/bin
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## 🛠️ Step 2: Install Native ZeroClaw
+## 🛠️ Step 2: Install Latest Prebuilt ZeroClaw
 ```bash
-# Clone verified Android repo
-git clone https://github.com/BleakNarratives/zeroclaw-android.git
-cp zeroclaw-android/bin/zeroclaw ~/bin/zeroclaw
-chmod +x ~/bin/zeroclaw
-rm -rf zeroclaw-android
+# Clone repo and install latest prebuilt binary
+git clone https://github.com/zeroclaw-labs/zeroclaw.git
+cd zeroclaw
+./install.sh --prebuilt-only
+cd ..
+rm -rf zeroclaw
 
 # Verify
-~/bin/zeroclaw --version  # zeroclaw v0.1.7+
-file ~/bin/zeroclaw       # ELF 64-bit ARM aarch64
+~/.cargo/bin/zeroclaw --version  # latest installed version
+file ~/.cargo/bin/zeroclaw       # ELF 64-bit ARM aarch64
 ```
 
+The installer places the `zeroclaw` binary in `~/.cargo/bin` automatically.
+
 ## ⚙️ Step 3: Aliases & Persistence
+Add helper aliases, then create a Termux:Boot script so ZeroClaw starts again after reboot.
 ```bash
 cat >> ~/.bashrc << 'EOF'
-export PATH="$HOME/bin:$PATH"
-# ZeroClaw Native
-alias zeroclaw="~/bin/zeroclaw"
 alias zeroclaw-stop="pkill -f zeroclaw"
 alias zeroclaw-start="termux-wake-lock && nohup zeroclaw daemon > ~/.zeroclaw/daemon.out 2>&1 &"
 alias zeroclaw-restart="zeroclaw-stop && sleep 3 && zeroclaw-start"
 EOF
 
-# Auto-boot (survives reboot)
+# Auto-start after reboot (requires Termux:Boot)
 mkdir -p ~/.termux/boot
 
-# Auto-start script (with PATH)
+# Boot script
 cat > ~/.termux/boot/zeroclaw << 'EOF'
 #!/data/data/com.termux/files/usr/bin/sh
-export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 sleep 10
 termux-wake-lock
-~/bin/zeroclaw daemon &
+~/.cargo/bin/zeroclaw daemon &
 EOF
 chmod +x ~/.termux/boot/zeroclaw
 
+# Load the new aliases in the current shell
 source ~/.bashrc
 ```
 
 ## 🔧 Step 4: Core Configuration
-Interactive onboarding wizard in CLI
+Run the onboarding wizard:
 ```bash
-zeroclaw onboard --interactive
+zeroclaw onboard
 ```
 
 Recommended minimal setup
@@ -87,21 +115,7 @@ Close Termux → Bot still replies
 Reboot phone → Auto-revives
 ```
 
-## 🌐 **OPTIONAL: Offline Local Models (Ollama)**
-Zero OpenAI costs, full privacy:
-```bash
-proot-distro install debian
-proot-distro login debian -- bash -c "
-curl -fsSL https://ollama.com/install.sh | sh
-ollama serve &
-sleep 5
-ollama pull gemma2:2b  # 1.6GB, Note20 fast
-"
-```
-```
-zeroclaw onboard → provider: ollama, url: http://localhost:11434
-Models: gemma2:2b, phi3:3b (offline genius)
-```
+Want to experiment with local LLMs on Android? See `android-local-llm.md`.
 
 ## 📊 Monitoring & Commands
 ```bash
@@ -117,7 +131,7 @@ ps aux | grep zeroclaw  # PID check
 
 ## 🔒 Files Structure
 ```
-~/bin/zeroclaw                  # Native binary (15MB)
+~/.cargo/bin/zeroclaw           # Installed binary
 ~/.zeroclaw/config.toml         # OpenAI/Telegram keys
 ~/.zeroclaw/daemon.out          # Live logs
 ~/.zeroclaw/sessions/           # Chat history  
@@ -130,21 +144,13 @@ ps aux | grep zeroclaw  # PID check
 | Bot silent | `tail daemon.out` + `allowed_users=*` |
 | Dies sleep | `zeroclaw-start` (has wake-lock) |
 | htop 1 core | Android gating—loads under stress |
-| `line 1: Not:` | `git clone` → `cp bin/zeroclaw ~/bin/` |
+| `line 1: Not:` | Re-run `./install.sh --prebuilt-only` inside `zeroclaw/` |
 
 ## 📈 Performance (Note 20 Ultra)
 ```
 Idle: 3-8mAh/hr, 1 core, 20MB RAM
 Query: GPT-4o-mini <2s, full 8 cores
-Offline Gemma2: 4-8 tokens/s
 Uptime: 99.9% (wake-lock)
 ```
 
-## 🎖️ Victory Checklist
-- [x] Native binary (no glibc)
-- [x] Telegram replies instantly
-- [x] Survives Termux close
-- [x] Auto-restart on boot
-- [ ] Optional: Ollama offline
-
-**Production-ready perfection.** Deploy anywhere! 🚀
+Reliable and lightweight for daily Android use. 🚀

@@ -1,8 +1,10 @@
-# Android cross‑compile with cargo-android on WSL + Termux targets
+# ZeroClaw Guide: Android Cross-Compile with `cargo-android`
 
-This guide shows how to set up the Android SDK/NDK on WSL, configure environment variables, and build Rust binaries for Android (aarch64‑linux‑android) using `cargo-android`. It assumes a 64‑bit Android device (e.g. Samsung Note 20 Ultra, arm64‑v8a) and uses API 24 as the minimum Android version while still running on modern phones. [browser.geekbench](https://browser.geekbench.com/v5/cpu/baseline/10349832)
+Back to the main setup guide: `README.md`
 
-## 1. Prerequisites on WSL
+This guide covers cross-compiling Rust binaries for Android with `cargo-android` on WSL. It walks through Android SDK/NDK setup, environment configuration, and building for `aarch64-linux-android`.
+
+## Step 1: Prerequisites on WSL
 
 On your WSL distro (Ubuntu/Debian‑like):
 
@@ -13,7 +15,7 @@ sudo apt install -y curl unzip openjdk-17-jdk
 
 Java is required for `sdkmanager`. [digitalocean](https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-22-04)
 
-## 2. Install Android command‑line tools (SDK skeleton)
+## Step 2: Install Android Command-Line Tools
 
 From your WSL home:
 
@@ -41,7 +43,7 @@ $HOME/Android/cmdline-tools/latest/bin/sdkmanager
 
 
 
-## 3. Set core environment variables (WSL)
+## Step 3: Set Core Environment Variables
 
 In your current shell:
 
@@ -68,7 +70,7 @@ Then `sdkmanager --list` should succeed. [kontext](https://kontext.tech/project/
 
 Add these exports to `~/.bashrc` or `~/.zshrc` later for persistence.
 
-## 4. Install SDK platform + NDK with sdkmanager
+## Step 4: Install SDK Platform and NDK
 
 Install platform‑tools, an Android platform (API 34 for tooling), and NDK r26.1.10909125:
 
@@ -91,7 +93,7 @@ $ANDROID_SDK_ROOT/ndk/26.1.10909125
 
 Using a recent NDK (r26) is recommended and supports building back to API 21+, as long as you choose a suitable `ANDROID_API`. [developer.android](https://developer.android.com/ndk/downloads/revision_history)
 
-## 5. Choose ANDROID_API (Termux / device check)
+## Step 5: Choose `ANDROID_API`
 
 On your Android device in Termux, you can confirm ABI and API level:
 
@@ -119,7 +121,7 @@ export ANDROID_API=24
 
 Executables built for older Android versions run on newer versions, but not always the reverse, so choosing 24 gives you a safe minSdk while still running on your phone (API 33). [apilevels](https://apilevels.com)
 
-## 6. Final environment exports (WSL)
+## Step 6: Final Environment Exports
 
 Add the following to `~/.bashrc` (adjust NDK version if needed):
 
@@ -139,7 +141,7 @@ source ~/.bashrc
 
 Now `sdkmanager --list` and other tools should work without extra setup. [developer.android](https://developer.android.com/ndk/downloads)
 
-## 7. Install Rust target and cargo-android
+## Step 7: Install Rust Target and `cargo-android`
 
 Install the `cargo-android` wrapper and the Android Rust target for 64‑bit ARM:
 
@@ -151,7 +153,7 @@ rustup target add aarch64-linux-android
 
 `cargo-android` is a bare‑bones wrapper that injects `ANDROID_NDK_ROOT` and `ANDROID_API` when the target is an Android one. [github](https://github.com/chenxiaolong/cargo-android/)
 
-## 8. Build a Rust project for Android (aarch64)
+## Step 8: Build a Rust Project for Android
 
 From your Rust crate root (on WSL):
 
@@ -170,7 +172,7 @@ target/aarch64-linux-android/release/<your-binary-name>
 
 You can then package it or push it to your device (via `adb`, Termux, or inside an APK) as needed. [developer.android](https://developer.android.com/ndk/guides/other_build_systems)
 
-## 9. Optional: Termux‑side quick check for planning
+## Step 9: Optional Termux-Side Quick Check
 
 If you want a tiny helper snippet in Termux that both prints your ABI/API and proposes a sane `ANDROID_API` (<= your device, ≥ 24 where possible):
 
@@ -198,6 +200,7 @@ fi
 
 Use that suggestion when configuring your WSL build environment so that the binaries you produce will run on your device and most reasonably recent Android versions. [api.suwish](http://api.suwish.com/android/ndk/guides/abis.html)
 
-***
-
-If you tell me your planned repo layout (e.g. `./android/`, `./rust/`), I can add a short “Makefile + CI” section to this guide that wires `cargo android build` into targets like `make android-aarch64`.  
+## Notes
+- Use API 24 when you want broad compatibility across modern Android devices.
+- Verify your target ABI and API level on the device before building.
+- Keep your `ANDROID_NDK_ROOT` version aligned with the installed NDK under `$ANDROID_SDK_ROOT/ndk/`.
