@@ -1,6 +1,6 @@
 # ZeroClaw Guide: Local LLM on Android with Termux
 
-Back to the main setup guide: `README.md`
+Back to the main setup guide: [README.md](README.md)
 
 This guide covers the experimental local LLM path for ZeroClaw on Android. It is separate from the main setup because local models on phones are slower and more resource-constrained than hosted providers.
 

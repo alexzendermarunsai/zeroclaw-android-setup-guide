@@ -1,6 +1,6 @@
 # ZeroClaw Guide: SSH Access for Termux on Android
 
-Back to the main setup guide: `README.md`
+Back to the main setup guide: [README.md](README.md)
 
 This guide covers OpenSSH setup for Termux on Android without root, so you can connect to your phone remotely during ZeroClaw setup and maintenance.
 

@@ -23,9 +23,9 @@ zeroclaw daemon
 For reboot persistence and helper aliases, continue with Step 3.
 
 ## 📚 Other Guides
-- `android-local-llm.md` - Run local LLMs on Android with Termux
-- `android-cross-compile-guide.md` - Cross-compile Android binaries
-- `setup-ssh-termux.md` - Set up SSH access for Termux
+- [android-local-llm.md](android-local-llm.md) - Run local LLMs on Android with Termux
+- [android-cross-compile-guide.md](android-cross-compile-guide.md) - Cross-compile Android binaries
+- [setup-ssh-termux.md](setup-ssh-termux.md) - Set up SSH access for Termux
 
 ## 📱 Prerequisites
 ```
@@ -115,7 +115,7 @@ Close Termux → Bot still replies
 Reboot phone → Auto-revives
 ```
 
-Want to experiment with local LLMs on Android? See `android-local-llm.md`.
+Want to experiment with local LLMs on Android? See [android-local-llm.md](android-local-llm.md).
 
 ## 📊 Monitoring & Commands
 ```bash

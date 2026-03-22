@@ -1,6 +1,6 @@
 # ZeroClaw Guide: Android Cross-Compile with `cargo-android`
 
-Back to the main setup guide: `README.md`
+Back to the main setup guide: [README.md](README.md)
 
 This guide covers cross-compiling Rust binaries for Android with `cargo-android` on WSL. It walks through Android SDK/NDK setup, environment configuration, and building for `aarch64-linux-android`.
 
